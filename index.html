@@ -5,34 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VR Teleportation World</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
     <script>
-      // Teleport component
+      // Componente personalizado de teletransporte
       AFRAME.registerComponent("teleport-point", {
-        schema: { 
-          target: { type: "vec3" }
-        },
+        schema: { target: { type: "vec3" } },
         init: function () {
           const el = this.el;
-          const data = this.data;
           const rig = document.querySelector("#rig");
+          const target = this.data.target;
 
+          // Al hacer click, teletransporta al punto indicado
           el.addEventListener("click", () => {
-            rig.setAttribute("animation", {
+            rig.setAttribute("animation__teleport", {
               property: "position",
-              to: `${data.target.x} ${data.target.y} ${data.target.z}`,
-              dur: 500,
+              to: `${target.x} ${target.y} ${target.z}`,
+              dur: 600,
               easing: "easeInOutQuad",
             });
           });
 
+          // Efecto visual al pasar el cursor o rayo
           el.addEventListener("mouseenter", () => {
             el.setAttribute("scale", "1.3 0.1 1.3");
-            el.setAttribute("material", "emissiveIntensity", "1");
+            el.setAttribute("material", "emissiveIntensity: 1");
           });
-          
+
           el.addEventListener("mouseleave", () => {
             el.setAttribute("scale", "1 0.1 1");
-            el.setAttribute("material", "emissiveIntensity", "0.6");
+            el.setAttribute("material", "emissiveIntensity: 0.6");
           });
         },
       });
@@ -41,22 +42,23 @@
 
   <body>
     <a-scene>
-      <!-- Lighting -->
+      <!-- Luces -->
       <a-light type="ambient" intensity="0.7" color="#FFF"></a-light>
       <a-light type="directional" position="5 10 5" intensity="0.8" color="#FFF"></a-light>
 
-      <!-- Sky -->
+      <!-- Cielo -->
       <a-sky color="#87CEEB"></a-sky>
 
-      <!-- Camera Rig -->
+      <!-- Cámara + Rig -->
       <a-entity id="rig" position="0 0 0">
-        <a-entity 
+        <a-entity
           id="camera"
-          camera 
-          position="0 1.6 0" 
+          camera
+          position="0 1.6 0"
           look-controls
-          wasd-controls="acceleration: 30">
-          
+          wasd-controls="acceleration: 30"
+        >
+          <!-- Cursor (para escritorio o visor sin mandos VR) -->
           <a-cursor
             color="#00FF00"
             fuse="true"
@@ -65,101 +67,110 @@
           ></a-cursor>
         </a-entity>
 
-        <!-- VR Controllers -->
-        <a-entity 
+        <!-- Controladores VR -->
+        <a-entity
           laser-controls="hand: left"
           raycaster="objects: .teleport; far: 20"
-          line="color: #00FF00; opacity: 0.75">
-        </a-entity>
-        
-        <a-entity 
+          line="color: #00FF00; opacity: 0.75"
+        ></a-entity>
+
+        <a-entity
           laser-controls="hand: right"
           raycaster="objects: .teleport; far: 20"
-          line="color: #00FF00; opacity: 0.75">
-        </a-entity>
-
-        <!-- Hand Tracking -->
-        <a-entity 
-          hand-tracking-controls="hand: left; modelColor: #00FF00"
-          sphere-collider="objects: .teleport">
-        </a-entity>
-        
-        <a-entity 
-          hand-tracking-controls="hand: right; modelColor: #00FF00"
-          sphere-collider="objects: .teleport">
-        </a-entity>
+          line="color: #00FF00; opacity: 0.75"
+        ></a-entity>
       </a-entity>
 
-      <!-- GROUND -->
-      <a-plane 
-        rotation="-90 0 0" 
-        width="50" 
-        height="50" 
-        color="#5a8f5a">
-      </a-plane>
+      <!-- Suelo -->
+      <a-plane rotation="-90 0 0" width="50" height="50" color="#5a8f5a"></a-plane>
 
-      <!-- CENTRAL AREA -->
+      <!-- Zonas y obstáculos -->
       <a-box position="0 0.5 -5" width="8" height="1" depth="8" color="#8B7355"></a-box>
       <a-box position="0 1.5 -5" width="1" height="2" depth="1" color="#654321"></a-box>
 
-      <!-- LEFT PLATFORM -->
       <a-box position="-10 1 0" width="5" height="2" depth="5" color="#CD853F"></a-box>
       <a-cylinder position="-10 3 0" radius="0.5" height="2" color="#FFD700"></a-cylinder>
 
-      <!-- RIGHT PLATFORM -->
       <a-box position="10 2 0" width="5" height="4" depth="5" color="#D2691E"></a-box>
       <a-sphere position="10 5 0" radius="0.7" color="#FF6347"></a-sphere>
 
-      <!-- BACK AREA -->
       <a-box position="0 0.5 -15" width="6" height="1" depth="6" color="#A0522D"></a-box>
       <a-box position="-3 1.5 -15" width="1" height="2" depth="1" color="#8B4513"></a-box>
       <a-box position="3 1.5 -15" width="1" height="2" depth="1" color="#8B4513"></a-box>
 
-      <!-- OBSTACLES -->
       <a-cylinder position="5 1.5 -8" radius="0.5" height="3" color="#696969"></a-cylinder>
       <a-cylinder position="-5 1.5 -8" radius="0.5" height="3" color="#696969"></a-cylinder>
       <a-box position="0 0.5 5" width="3" height="1" depth="3" color="#778899"></a-box>
 
-      <!-- TELEPORT POINTS -->
-      
-      <!-- Start -->
-      <a-cylinder class="teleport" position="0 0.05 0" radius="1" height="0.1" 
-                  color="#00FF00" material="emissive: #00FF00; emissiveIntensity: 0.8"
-                  teleport-point="target: 0 0 0">
+      <!-- Puntos de Teletransporte -->
+      <a-cylinder
+        class="teleport"
+        position="0 0.05 0"
+        radius="1"
+        height="0.1"
+        color="#00FF00"
+        material="emissive: #00FF00; emissiveIntensity: 0.8"
+        teleport-point="target: 0 0 0"
+      >
         <a-text value="START" position="0 0.2 0" align="center" color="#000" width="2"></a-text>
       </a-cylinder>
 
-      <!-- Central platform -->
-      <a-cylinder class="teleport" position="0 0.55 -5" radius="0.8" height="0.1" 
-                  color="#FFFF00" material="emissive: #FFFF00; emissiveIntensity: 0.6"
-                  teleport-point="target: 0 0.5 -5"></a-cylinder>
+      <a-cylinder
+        class="teleport"
+        position="0 0.55 -5"
+        radius="0.8"
+        height="0.1"
+        color="#FFFF00"
+        material="emissive: #FFFF00; emissiveIntensity: 0.6"
+        teleport-point="target: 0 0.5 -5"
+      ></a-cylinder>
 
-      <!-- Left platform -->
-      <a-cylinder class="teleport" position="-10 1.05 0" radius="0.8" height="0.1" 
-                  color="#FF6600" material="emissive: #FF6600; emissiveIntensity: 0.6"
-                  teleport-point="target: -10 1 0"></a-cylinder>
+      <a-cylinder
+        class="teleport"
+        position="-10 1.05 0"
+        radius="0.8"
+        height="0.1"
+        color="#FF6600"
+        material="emissive: #FF6600; emissiveIntensity: 0.6"
+        teleport-point="target: -10 1 0"
+      ></a-cylinder>
 
-      <!-- Right platform -->
-      <a-cylinder class="teleport" position="10 2.05 0" radius="0.8" height="0.1" 
-                  color="#FF00FF" material="emissive: #FF00FF; emissiveIntensity: 0.6"
-                  teleport-point="target: 10 2 0"></a-cylinder>
+      <a-cylinder
+        class="teleport"
+        position="10 2.05 0"
+        radius="0.8"
+        height="0.1"
+        color="#FF00FF"
+        material="emissive: #FF00FF; emissiveIntensity: 0.6"
+        teleport-point="target: 10 2 0"
+      ></a-cylinder>
 
-      <!-- Back area -->
-      <a-cylinder class="teleport" position="0 0.55 -15" radius="0.8" height="0.1" 
-                  color="#00FFFF" material="emissive: #00FFFF; emissiveIntensity: 0.6"
-                  teleport-point="target: 0 0.5 -15"></a-cylinder>
+      <a-cylinder
+        class="teleport"
+        position="0 0.55 -15"
+        radius="0.8"
+        height="0.1"
+        color="#00FFFF"
+        material="emissive: #00FFFF; emissiveIntensity: 0.6"
+        teleport-point="target: 0 0.5 -15"
+      ></a-cylinder>
 
-      <!-- Between obstacles -->
-      <a-cylinder class="teleport" position="0 0.05 -8" radius="0.7" height="0.1" 
-                  color="#FF0000" material="emissive: #FF0000; emissiveIntensity: 0.6"
-                  teleport-point="target: 0 0 -8"></a-cylinder>
+      <a-cylinder
+        class="teleport"
+        position="0 0.05 -8"
+        radius="0.7"
+        height="0.1"
+        color="#FF0000"
+        material="emissive: #FF0000; emissiveIntensity: 0.6"
+        teleport-point="target: 0 0 -8"
+      ></a-cylinder>
 
-      <!-- Instructions -->
+      <!-- Instrucciones -->
       <a-text
-        value="Look at glowing circles to teleport | WASD to walk"
+        value="Look at glowing circles or use VR lasers to teleport"
         position="0 2 -2"
         align="center"
-        width="4"
+        width="6"
         color="#000000"
       ></a-text>
     </a-scene>
