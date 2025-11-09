@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VR Teleportation World</title>
+
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- A-Frame Extras (includes teleport-controls) -->
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
   </head>
 
@@ -13,268 +16,84 @@
       <!-- Lighting -->
       <a-light type="ambient" intensity="0.6" color="#FFF"></a-light>
       <a-light type="directional" position="5 10 5" intensity="0.8" color="#FFF"></a-light>
-      <a-light type="point" position="15 3 -15" intensity="0.5" color="#4CAF50"></a-light>
-      <a-light type="point" position="-15 3 15" intensity="0.5" color="#FF5722"></a-light>
 
       <!-- Sky -->
       <a-sky color="#87CEEB"></a-sky>
 
-      <!-- Camera Rig with Teleportation Controls -->
-      <a-entity id="rig" 
-                movement-controls="controls: checkpoint"
-                position="0 0 5">
-        <a-entity camera 
-                  position="0 1.6 0" 
-                  look-controls="pointerLockEnabled: false">
-          <!-- Desktop cursor -->
-          <a-cursor
-            color="#00FF00"
-            raycaster="objects: .checkpoint"
-            fuse="false"
-          ></a-cursor>
-        </a-entity>
+      <!-- Camera Rig (user) -->
+      <a-entity id="rig" position="0 0 5">
+        <a-entity camera position="0 1.6 0"></a-entity>
 
-        <!-- VR Controllers with teleport -->
-        <a-entity 
+        <!-- LEFT HAND TELEPORT -->
+        <a-entity
+          teleport-controls="button: trigger; collisionEntities: .checkpoint; cameraRig: #rig; teleportOrigin: #head;"
           laser-controls="hand: left"
-          raycaster="objects: .checkpoint; far: 20"
-          line="color: #00FF00; opacity: 0.75">
-        </a-entity>
-        
-        <a-entity 
+        ></a-entity>
+
+        <!-- RIGHT HAND TELEPORT -->
+        <a-entity
+          teleport-controls="button: trigger; collisionEntities: .checkpoint; cameraRig: #rig; teleportOrigin: #head;"
           laser-controls="hand: right"
-          raycaster="objects: .checkpoint; far: 20"
-          line="color: #00FF00; opacity: 0.75">
-        </a-entity>
+        ></a-entity>
 
-        <!-- Hand Tracking -->
-        <a-entity 
-          hand-tracking-controls="hand: left; modelColor: #00FF00"
-          sphere-collider="objects: .checkpoint">
-        </a-entity>
-        
-        <a-entity 
-          hand-tracking-controls="hand: right; modelColor: #00FF00"
-          sphere-collider="objects: .checkpoint">
-        </a-entity>
+        <a-entity id="head" position="0 1.6 0"></a-entity>
       </a-entity>
 
-      <!-- GROUND FLOOR -->
-      <a-plane 
-        rotation="-90 0 0" 
-        width="60" 
-        height="60" 
-        color="#3a5f38"
-        shadow="receive: true">
-      </a-plane>
+      <!-- Ground -->
+      <a-plane rotation="-90 0 0" width="60" height="60" color="#3a5f38"></a-plane>
 
-      <!-- OBSTACLE ZONE 1: Wall Maze -->
-      <a-entity position="0 0 -10">
-        <!-- Outer walls -->
-        <a-box position="0 2 5" width="20" height="4" depth="0.5" color="#8B4513"></a-box>
-        <a-box position="0 2 -5" width="20" height="4" depth="0.5" color="#8B4513"></a-box>
-        <a-box position="-10 2 0" width="0.5" height="4" depth="10" color="#8B4513"></a-box>
-        <a-box position="10 2 0" width="0.5" height="4" depth="10" color="#8B4513"></a-box>
-        
-        <!-- Internal maze walls -->
-        <a-box position="5 2 0" width="0.5" height="4" depth="8" color="#A0522D"></a-box>
-        <a-box position="-5 2 2" width="8" height="4" depth="0.5" color="#A0522D"></a-box>
-        <a-box position="0 2 -2" width="6" height="4" depth="0.5" color="#A0522D"></a-box>
-        <a-box position="-2 2 -4" width="0.5" height="4" depth="3" color="#A0522D"></a-box>
-      </a-entity>
+      <!-- Example obstacles -->
+      <a-box position="0 1 -5" width="4" height="2" depth="4" color="#8B4513"></a-box>
+      <a-box position="6 1 -8" width="3" height="3" depth="3" color="#A0522D"></a-box>
+      <a-cylinder position="-5 1.5 -10" radius="1" height="3" color="#696969"></a-cylinder>
+      <a-box position="10 0.5 2" width="5" height="1" depth="5" color="#CD853F"></a-box>
 
-      <!-- OBSTACLE ZONE 2: Elevated Platforms -->
-      <a-entity position="15 0 0">
-        <!-- Low platform -->
-        <a-box position="0 0.5 0" width="4" height="1" depth="4" color="#CD853F"></a-box>
-        
-        <!-- Medium platform -->
-        <a-box position="5 1.5 -5" width="3.5" height="1" depth="3.5" color="#D2691E"></a-box>
-        
-        <!-- High platform -->
-        <a-box position="-3 2.5 4" width="3" height="1" depth="3" color="#8B4513"></a-box>
-        
-        <!-- Highest platform -->
-        <a-box position="2 3.5 2" width="3.5" height="1" depth="3.5" color="#A0522D"></a-box>
-        
-        <!-- Obstacles -->
-        <a-cylinder position="0 2 -2" radius="0.4" height="4" color="#654321"></a-cylinder>
-        <a-cylinder position="3 2 3" radius="0.4" height="4" color="#654321"></a-cylinder>
-        <a-cylinder position="-4 2 -3" radius="0.4" height="4" color="#654321"></a-cylinder>
-      </a-entity>
-
-      <!-- OBSTACLE ZONE 3: Pillar Garden -->
-      <a-entity position="-15 0 5">
-        <!-- Tall pillars -->
-        <a-cylinder position="0 3 0" radius="0.8" height="6" color="#696969"></a-cylinder>
-        <a-cylinder position="4 2.5 -3" radius="0.7" height="5" color="#696969"></a-cylinder>
-        <a-cylinder position="-4 3.5 3" radius="0.9" height="7" color="#696969"></a-cylinder>
-        <a-cylinder position="3 4 4" radius="0.6" height="8" color="#696969"></a-cylinder>
-        <a-cylinder position="-3 2 -4" radius="0.8" height="4" color="#696969"></a-cylinder>
-        
-        <!-- Ground obstacles -->
-        <a-box position="2 0.5 0" width="2" height="1" depth="2" color="#778899"></a-box>
-        <a-box position="-2 0.5 2" width="1.5" height="1" depth="1.5" color="#778899"></a-box>
-      </a-entity>
-
-      <!-- OBSTACLE ZONE 4: Bridge and Gap -->
-      <a-entity position="0 0 15">
-        <!-- Left platform -->
-        <a-box position="-8 0.5 0" width="6" height="1" depth="8" color="#8B4513"></a-box>
-        
-        <!-- Right platform -->
-        <a-box position="8 0.5 0" width="6" height="1" depth="8" color="#8B4513"></a-box>
-        
-        <!-- Narrow bridge -->
-        <a-box position="0 0.6 0" width="4" height="0.2" depth="1.5" color="#D2691E"></a-box>
-        
-        <!-- Bridge supports -->
-        <a-cylinder position="-2 -1 0" radius="0.2" height="3" color="#654321"></a-cylinder>
-        <a-cylinder position="2 -1 0" radius="0.2" height="3" color="#654321"></a-cylinder>
-      </a-entity>
-
-      <!-- OBSTACLE ZONE 5: Stair Tower -->
-      <a-entity position="-15 0 -15">
-        <!-- Tower base -->
-        <a-cylinder position="0 0.5 0" radius="3" height="1" color="#696969"></a-cylinder>
-        
-        <!-- Stairs -->
-        <a-box position="2 1 0" width="1.5" height="0.3" depth="3" color="#A9A9A9"></a-box>
-        <a-box position="0 1.5 2" width="3" height="0.3" depth="1.5" color="#A9A9A9"></a-box>
-        <a-box position="-2 2 0" width="1.5" height="0.3" depth="3" color="#A9A9A9"></a-box>
-        <a-box position="0 2.5 -2" width="3" height="0.3" depth="1.5" color="#A9A9A9"></a-box>
-        <a-box position="2 3 0" width="1.5" height="0.3" depth="3" color="#A9A9A9"></a-box>
-        <a-box position="0 3.5 2" width="3" height="0.3" depth="1.5" color="#A9A9A9"></a-box>
-        
-        <!-- Top platform -->
-        <a-cylinder position="0 4.5 0" radius="2.5" height="0.5" color="#808080"></a-cylinder>
-        
-        <!-- Central column -->
-        <a-cylinder position="0 2 0" radius="0.5" height="4" color="#696969"></a-cylinder>
-      </a-entity>
-
-      <!-- OBSTACLE ZONE 6: Rock Field -->
-      <a-entity position="15 0 -15">
-        <!-- Large rocks -->
-        <a-sphere position="0 1 0" radius="1.2" color="#708090" segments-height="6" segments-width="8"></a-sphere>
-        <a-sphere position="4 0.8 -3" radius="1" color="#778899" segments-height="6" segments-width="8"></a-sphere>
-        <a-sphere position="-3 1.3 4" radius="1.5" color="#696969" segments-height="6" segments-width="8"></a-sphere>
-        <a-sphere position="3 0.7 3" radius="0.9" color="#708090" segments-height="6" segments-width="8"></a-sphere>
-        <a-sphere position="-4 1.1 -2" radius="1.3" color="#778899" segments-height="6" segments-width="8"></a-sphere>
-        
-        <!-- Medium rocks -->
-        <a-sphere position="2 0.5 -1" radius="0.6" color="#696969" segments-height="5" segments-width="7"></a-sphere>
-        <a-sphere position="-2 0.4 2" radius="0.5" color="#708090" segments-height="5" segments-width="7"></a-sphere>
-        <a-sphere position="1 0.5 4" radius="0.6" color="#778899" segments-height="5" segments-width="7"></a-sphere>
-      </a-entity>
-
-      <!-- TELEPORTATION CHECKPOINTS -->
-      
-      <!-- Starting point -->
-      <a-cylinder class="checkpoint" position="0 0.05 5" radius="1.2" height="0.1" 
-                  color="#00FF00" material="emissive: #00FF00; emissiveIntensity: 0.8">
+      <!-- TELEPORT CHECKPOINTS -->
+      <a-cylinder
+        class="checkpoint"
+        position="0 0.05 5"
+        radius="1"
+        height="0.1"
+        color="#00FF00"
+        material="emissive: #00FF00; emissiveIntensity: 0.8"
+      >
         <a-text value="START" position="0 0.2 0" align="center" color="#000" width="4"></a-text>
       </a-cylinder>
 
-      <!-- Zone 1: Entrance to Maze -->
-      <a-cylinder class="checkpoint" position="0 0.05 -5" radius="0.8" height="0.1" 
-                  color="#FFFF00" material="emissive: #FFFF00; emissiveIntensity: 0.6"></a-cylinder>
+      <a-cylinder
+        class="checkpoint"
+        position="0 0.05 -5"
+        radius="1"
+        height="0.1"
+        color="#FFFF00"
+        material="emissive: #FFFF00; emissiveIntensity: 0.6"
+      ></a-cylinder>
 
-      <!-- Zone 1: Inside Maze -->
-      <a-cylinder class="checkpoint" position="-5 0.05 -10" radius="0.7" height="0.1" 
-                  color="#FFFF00" material="emissive: #FFFF00; emissiveIntensity: 0.6"></a-cylinder>
+      <a-cylinder
+        class="checkpoint"
+        position="5 0.05 -10"
+        radius="1"
+        height="0.1"
+        color="#FF6600"
+        material="emissive: #FF6600; emissiveIntensity: 0.6"
+      ></a-cylinder>
 
-      <!-- Zone 1: Maze Center -->
-      <a-cylinder class="checkpoint" position="0 0.05 -12" radius="0.7" height="0.1" 
-                  color="#FFFF00" material="emissive: #FFFF00; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 2: Platform 1 -->
-      <a-cylinder class="checkpoint" position="15 0.55 0" radius="0.8" height="0.1" 
-                  color="#FF6600" material="emissive: #FF6600; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 2: Platform 2 -->
-      <a-cylinder class="checkpoint" position="20 1.55 -5" radius="0.7" height="0.1" 
-                  color="#FF6600" material="emissive: #FF6600; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 2: Platform 3 -->
-      <a-cylinder class="checkpoint" position="12 2.55 4" radius="0.6" height="0.1" 
-                  color="#FF6600" material="emissive: #FF6600; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 2: Highest Platform -->
-      <a-cylinder class="checkpoint" position="17 3.55 2" radius="0.7" height="0.1" 
-                  color="#FF6600" material="emissive: #FF6600; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 3: Pillar Area Entry -->
-      <a-cylinder class="checkpoint" position="-15 0.05 5" radius="0.8" height="0.1" 
-                  color="#00FFFF" material="emissive: #00FFFF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 3: Between Pillars -->
-      <a-cylinder class="checkpoint" position="-13 0.05 8" radius="0.7" height="0.1" 
-                  color="#00FFFF" material="emissive: #00FFFF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 4: Bridge Left -->
-      <a-cylinder class="checkpoint" position="-8 0.55 15" radius="0.8" height="0.1" 
-                  color="#FF00FF" material="emissive: #FF00FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 4: Bridge Center -->
-      <a-cylinder class="checkpoint" position="0 0.65 15" radius="0.5" height="0.1" 
-                  color="#FF00FF" material="emissive: #FF00FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 4: Bridge Right -->
-      <a-cylinder class="checkpoint" position="8 0.55 15" radius="0.8" height="0.1" 
-                  color="#FF00FF" material="emissive: #FF00FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 5: Tower Base -->
-      <a-cylinder class="checkpoint" position="-15 0.55 -15" radius="0.8" height="0.1" 
-                  color="#0000FF" material="emissive: #0000FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 5: Stair Level 1 -->
-      <a-cylinder class="checkpoint" position="-13 1.05 -15" radius="0.5" height="0.1" 
-                  color="#0000FF" material="emissive: #0000FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 5: Stair Level 2 -->
-      <a-cylinder class="checkpoint" position="-15 1.55 -13" radius="0.5" height="0.1" 
-                  color="#0000FF" material="emissive: #0000FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 5: Stair Level 3 -->
-      <a-cylinder class="checkpoint" position="-17 2.05 -15" radius="0.5" height="0.1" 
-                  color="#0000FF" material="emissive: #0000FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 5: Stair Level 4 -->
-      <a-cylinder class="checkpoint" position="-15 2.55 -17" radius="0.5" height="0.1" 
-                  color="#0000FF" material="emissive: #0000FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 5: Stair Level 5 -->
-      <a-cylinder class="checkpoint" position="-13 3.05 -15" radius="0.5" height="0.1" 
-                  color="#0000FF" material="emissive: #0000FF; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 5: Tower Top -->
-      <a-cylinder class="checkpoint" position="-15 4.55 -15" radius="0.9" height="0.1" 
-                  color="#0000FF" material="emissive: #0000FF; emissiveIntensity: 0.8">
-        <a-text value="TOP" position="0 0.2 0" align="center" color="#FFF" width="3"></a-text>
-      </a-cylinder>
-
-      <!-- Zone 6: Rock Field Entry -->
-      <a-cylinder class="checkpoint" position="15 0.05 -15" radius="0.8" height="0.1" 
-                  color="#FF0000" material="emissive: #FF0000; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 6: Between Rocks 1 -->
-      <a-cylinder class="checkpoint" position="17 0.05 -12" radius="0.6" height="0.1" 
-                  color="#FF0000" material="emissive: #FF0000; emissiveIntensity: 0.6"></a-cylinder>
-
-      <!-- Zone 6: Between Rocks 2 -->
-      <a-cylinder class="checkpoint" position="13 0.05 -18" radius="0.6" height="0.1" 
-                  color="#FF0000" material="emissive: #FF0000; emissiveIntensity: 0.6"></a-cylinder>
+      <a-cylinder
+        class="checkpoint"
+        position="-5 0.05 -15"
+        radius="1"
+        height="0.1"
+        color="#FF0000"
+        material="emissive: #FF0000; emissiveIntensity: 0.6"
+      ></a-cylinder>
 
       <!-- Instructions -->
       <a-text
-        value="TELEPORT: Look at glowing circles and click to move • Explore obstacle zones!"
+        value="TELEPORT: Aim controller laser at glowing circles and pull trigger."
         position="0 2.5 3"
         align="center"
         width="12"
         color="#000000"
-        background="#FFFFFF"
-        padding="0.2"
       ></a-text>
     </a-scene>
   </body>
